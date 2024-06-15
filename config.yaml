@@ -1,0 +1,9 @@
+server: 
+  port: 8080
+
+database:
+  user: root
+  password: zxcv4567
+  database_name: bank_system
+  port: 3306
+  host: localhost
