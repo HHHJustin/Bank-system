@@ -1,23 +1,32 @@
 package api
 
 import (
+	"bank_system/token"
 	"bank_system/util"
+	"fmt"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
 
 type Server struct {
-	config   util.Config
-	database *gorm.DB
-	router   *gin.Engine
+	config     util.Config
+	database   *gorm.DB
+	tokenMaker token.Maker
+	router     *gin.Engine
 }
 
 func NewServer(db *gorm.DB, config util.Config) (*Server, error) {
-	server := &Server{
-		config:   config,
-		database: db,
+	tokenmaker, err := token.NewJWTMaker(config.Token.SecretKey)
+	if err != nil {
+		return nil, fmt.Errorf("cannot create token maker : %w", err)
 	}
+	server := &Server{
+		config:     config,
+		database:   db,
+		tokenMaker: tokenmaker,
+	}
+	fmt.Println(server.config.Token.SecretKey)
 	server.setupRouter()
 	return server, nil
 }

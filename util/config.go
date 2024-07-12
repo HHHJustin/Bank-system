@@ -1,12 +1,15 @@
 package util
 
 import (
+	"time"
+
 	"github.com/spf13/viper"
 )
 
 type Config struct {
 	Server   ServerConfig   `mapstructure:"server"`
 	Database DatabaseConfig `mapstructure:"database"`
+	Token    TokenConfig    `mapstructure:"token"`
 }
 
 type ServerConfig struct {
@@ -19,6 +22,12 @@ type DatabaseConfig struct {
 	Name     string `mapstructure:"database_name"`
 	Host     string `mapstructure:"host"`
 	Port     string `mapstructure:"port"`
+}
+
+type TokenConfig struct {
+	AccessTokenDuration  time.Duration `mapstructure:"accessTokenDuration"`
+	RefreshTokenDuration time.Duration `mapstructure:"refreshTokenDuration"`
+	SecretKey            string        `mapstructure:"secretKey"`
 }
 
 func LoadConfig(path string) (config Config, err error) {

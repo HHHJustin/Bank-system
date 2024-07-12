@@ -7,3 +7,8 @@ database:
   database_name: bank_system
   port: 3306
   host: localhost
+
+token:
+  accessTokenDuration: 15m
+  refreshTokenDuration: 2h
+  secretKey: secretkey12345678910111213141516
