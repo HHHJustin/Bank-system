@@ -4,6 +4,7 @@ import (
 	"bank_system/token"
 	"bank_system/util"
 	"fmt"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -26,18 +27,28 @@ func NewServer(db *gorm.DB, config util.Config) (*Server, error) {
 		database:   db,
 		tokenMaker: tokenmaker,
 	}
-	fmt.Println(server.config.Token.SecretKey)
 	server.setupRouter()
 	return server, nil
 }
 
 func (server *Server) setupRouter() {
 	router := gin.Default()
-	router.POST("/users", server.createUser)
+	router.LoadHTMLGlob("templates/*")
+	router.Static("/static", "./static")
+
+	router.GET("/users/register", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "register.html", nil)
+	})
+	router.POST("/users/register", server.createUser)
+	router.GET("/users/login", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "login.html", nil)
+	})
 	router.POST("/users/login", server.loginUser)
+	router.POST("/users/renewAccessToken", server.renewAccessToken)
 
+	authRoutes := router.Group("/").Use(authMiddleware(server.tokenMaker))
+	authRoutes.GET("/account", server.accountPage)
 	server.router = router
-
 }
 
 func (server *Server) Start() error {
